@@ -96,7 +96,7 @@ def registration():
     user_password = data['password']
 
     with connection.cursor() as sql:
-        sql.execute("SELECT username FROM `users` WHERE username= %s", nickname)
+        sql.execute("SELECT username FROM `users` WHERE username = %s", nickname)
         result = sql.fetchall()
 
         if len(result) == 0:
@@ -104,7 +104,7 @@ def registration():
             connection.commit()
             return {'ok': True}
         else:
-            return abort(400)
+            return {'error': 'Nickname already taken'}, 400
 
 
 @app.route("/login", methods=['POST'])

@@ -13,12 +13,12 @@ class Registration(QtWidgets.QMainWindow, reglog.Ui_MainWindow):
         self.setupUi(self)
 
         self.label.setText("")
-        self.label_2.setText("Регистрация")
-        self.lineEdit.setPlaceholderText("Введите ник")
-        self.lineEdit_2.setPlaceholderText("Введите пароль")
-        self.pushButton.setText("Регистрация")
-        self.pushButton_2.setText("Вход")
-        self.setWindowTitle("Регистрация")
+        self.label_2.setText("Registration")
+        self.lineEdit.setPlaceholderText("Enter a nickname")
+        self.lineEdit_2.setPlaceholderText("Enter your password")
+        self.pushButton.setText("Registration")
+        self.pushButton_2.setText("Login")
+        self.setWindowTitle("Registration")
 
         self.pushButton.clicked.connect(self.reg)
         self.pushButton_2.clicked.connect(self.open_login)
@@ -33,11 +33,11 @@ class Registration(QtWidgets.QMainWindow, reglog.Ui_MainWindow):
         user_password = self.lineEdit_2.text()
 
         if user_nickname == "":
-            self.label.setText("Введите корректный логин!")
+            self.label.setText("Enter the correct login!")
             return
 
         if user_password == "":
-            self.label.setText("Введите корректный пароль!")
+            self.label.setText("Enter the correct password!")
             return
 
         if len(user_nickname) > 3:
@@ -50,19 +50,22 @@ class Registration(QtWidgets.QMainWindow, reglog.Ui_MainWindow):
                     }
                 )
             except Exception as e:
-                print("Сервер недоступен", e)
+                print("The server is unavailable", e)
                 return
 
             if response.status_code != 200:
-                self.label.setText("Ошибка регистрации!")
+                if response.json().get('error') == 'Nickname already taken':
+                    self.label.setText("The nickname already taken")
+                else:
+                    self.label.setText("Registration error!")
                 return
 
-            self.label.setText(f"Аккаунт {user_nickname} успешно зарегистрирован!")
+            self.label.setText(f"Account {user_nickname} successfully registered!")
 
             global USER
             USER = user_nickname
         else:
-            self.label.setText("Никнейм должен состоять минимум из 4 символов!")
+            self.label.setText("Nickname must consist of at least 4 characters!")
             return
 
         self.open_messenger()
@@ -79,12 +82,12 @@ class Login(QtWidgets.QMainWindow, reglog.Ui_MainWindow):
         self.setupUi(self)
 
         self.label.setText("")
-        self.label_2.setText("Вход")
-        self.lineEdit.setPlaceholderText("Введите ник")
-        self.lineEdit_2.setPlaceholderText("Введите пароль")
-        self.pushButton.setText("Вход")
-        self.pushButton_2.setText("Регистрация")
-        self.setWindowTitle("Вход")
+        self.label_2.setText("Login")
+        self.lineEdit.setPlaceholderText("Enter a nickname")
+        self.lineEdit_2.setPlaceholderText("Enter your password")
+        self.pushButton.setText("Login")
+        self.pushButton_2.setText("Registration")
+        self.setWindowTitle("Login")
 
         self.pushButton.clicked.connect(self.login)
         self.pushButton_2.clicked.connect(self.open_reg)
@@ -99,11 +102,11 @@ class Login(QtWidgets.QMainWindow, reglog.Ui_MainWindow):
         user_password = self.lineEdit_2.text()
 
         if user_nickname == '':
-            self.label.setText("Введите корректный логин")
+            self.label.setText("Enter the correct login")
             return
 
         if user_password == '':
-            self.label.setText("Введите корректный пароль")
+            self.label.setText("Enter the correct password")
             return
 
         if len(user_nickname) > 0:
@@ -116,11 +119,11 @@ class Login(QtWidgets.QMainWindow, reglog.Ui_MainWindow):
                     }
                 )
             except Exception:
-                print("Сервер недоступен")
+                print("Server is not available")
                 return
 
             if response.status_code != 200:
-                self.label.setText('Ошибка авторизации')
+                self.label.setText('Authorisation Error')
                 return
 
             global USER
@@ -174,7 +177,7 @@ class Messenger(QtWidgets.QMainWindow, interface.Ui_MainWindow):
             except Exception as e:
                 item = QtWidgets.QListWidgetItem()
                 item.setTextAlignment(QtCore.Qt.AlignCenter)
-                item.setText('Сервер недоступен!\n')
+                item.setText('Server is not available!\n')
                 self.listWidget.addItem(item)
                 print(e)
                 return
@@ -182,7 +185,7 @@ class Messenger(QtWidgets.QMainWindow, interface.Ui_MainWindow):
             if response.status_code != 200:
                 item = QtWidgets.QListWidgetItem()
                 item.setTextAlignment(QtCore.Qt.AlignCenter)
-                item.setText('Неправильное имя или текст!\n')
+                item.setText('Wrong name or text!\n')
                 self.listWidget.addItem(item)
                 return
 
